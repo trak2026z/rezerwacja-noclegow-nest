@@ -1,0 +1,24 @@
+# Dockerfile.dev
+FROM node:20-alpine
+
+# Lepsze stack traces
+ENV NODE_ENV=development \
+    NODE_OPTIONS=--enable-source-maps
+
+WORKDIR /app
+
+# Instalujemy zależności (cache działa dopóki package*.json się nie zmieni)
+COPY package*.json ./
+RUN npm install
+
+# Reszta źródeł
+COPY . .
+
+# Nasłuch portu aplikacji
+EXPOSE 3000
+
+# Działamy jako nie-root
+USER node
+
+# Dev mode z watch
+CMD ["npm", "run", "start:dev"]

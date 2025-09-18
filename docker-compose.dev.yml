@@ -1,0 +1,47 @@
+# docker-compose.dev.yml
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: rezerwacja_nest_api_dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://db:27017/rezerwacje
+      - JWT_SECRET=super_secret_jwt_key
+      - PORT=3000
+      # Jeśli na macOS nie łapie hot-reload, odkomentuj poniższe dwie linie:
+      # - CHOKIDAR_USEPOLLING=true
+      # - CHOKIDAR_INTERVAL=300
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    # Jeśli trafisz na problemy architektury na M1/M2:
+    # platform: linux/arm64
+
+  db:
+    image: mongo:7
+    container_name: rezerwacja_nest_db_dev
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    command: ["mongod", "--quiet", "--logpath", "/dev/null", "--bind_ip_all"]
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    # Jeśli trafisz na problemy architektury na M1/M2:
+    # platform: linux/arm64
+
+volumes:
+  mongo-data:
+    name: rezerwacja_nest_mongo_data_dev
