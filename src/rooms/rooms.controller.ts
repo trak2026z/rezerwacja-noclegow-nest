@@ -8,6 +8,8 @@ import {
   Delete,
   Req,
   UseGuards,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { RoomsService } from './rooms.service';
@@ -30,18 +32,21 @@ export class RoomsController {
   // Utworzenie pokoju
   @UseGuards(JwtAuthGuard)
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async create(@Body() createRoomDto: CreateRoomDto, @Req() req: RequestWithUser) {
     return this.roomsService.create(createRoomDto, req.user.userId);
   }
 
   // Lista wszystkich pokoi
   @Get()
+  @HttpCode(HttpStatus.OK)
   async findAll() {
     return this.roomsService.findAll();
   }
 
   // Szczegóły pokoju
   @Get(':id')
+  @HttpCode(HttpStatus.OK)
   async findOne(@Param('id') id: string) {
     return this.roomsService.findOne(id);
   }
@@ -49,6 +54,7 @@ export class RoomsController {
   // Aktualizacja pokoju
   @UseGuards(JwtAuthGuard)
   @Put(':id')
+  @HttpCode(HttpStatus.OK)
   async update(
     @Param('id') id: string, 
     @Body() updateRoomDto: UpdateRoomDto, 
@@ -60,6 +66,7 @@ export class RoomsController {
   // Usunięcie pokoju
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
+  @HttpCode(HttpStatus.OK)
   async remove(@Param('id') id: string, @Req() req: RequestWithUser) {
     return this.roomsService.remove(id, req.user.userId);
   }
@@ -67,6 +74,7 @@ export class RoomsController {
   // Reakcja like
   @UseGuards(JwtAuthGuard)
   @Post(':id/like')
+  @HttpCode(HttpStatus.OK)
   async handleLike(
     @Param('id') id: string,
     @Req() req: RequestWithUser,
@@ -77,6 +85,7 @@ export class RoomsController {
   // Reakcja dislike
   @UseGuards(JwtAuthGuard)
   @Post(':id/dislike')
+  @HttpCode(HttpStatus.OK)
   async handleDislike(
     @Param('id') id: string,
     @Req() req: RequestWithUser,
@@ -87,6 +96,7 @@ export class RoomsController {
   // Rezerwacja pokoju
   @UseGuards(JwtAuthGuard)
   @Post(':id/reserve')
+  @HttpCode(HttpStatus.OK)
   async reserveRoom(@Param('id') id: string, @Req() req: RequestWithUser) {
     return this.roomsService.reserveRoom(id, req.user.userId);
   }
